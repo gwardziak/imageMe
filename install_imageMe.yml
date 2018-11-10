@@ -1,0 +1,34 @@
+---
+- hosts: install_imageMe
+  become: yes
+  vars:
+    searchEngine: 006879359584856769921:rplfy3clmho
+    cloudApi: AIzaSyDLLC1pqOxkWA8jUjM-Cfwbl_13Sh_2t98
+  tasks:
+    - name: "install the latest version of git"
+      yum:
+        name: git
+        state: latest
+    - name: "install the latest version of python"
+      yum:
+        name: python
+        state: latest
+    - name: "add search engine env"
+      shell: echo "export SEARCH_ENGINE_ID={{searchEngine}}" >> .bashrc
+    - name: "add google cloud api"
+      shell: echo "export GOOGLE_CLOUD_API_KEY={{cloudApi}}" >> .bashrc
+    - name: "clone repo" 
+      git: 
+        repo: https://github.com/jkanclerz/google-search-python.git
+        dest: /home/ec2-user/google-search-python
+    - name: "create bin/image file"
+      file:
+        path: ~/../../bin/imageMe
+        state: touch
+        mode: "u+rwx,g+rwx,o+rwx"
+    - lineinfile:
+        path: ~/../../bin/imageMe
+        line: 'python /home/ec2-user/google-search-python/image_me.py "$1"'   
+
+
+ 
